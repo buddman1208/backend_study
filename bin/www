@@ -5,5 +5,5 @@ var app = require('../app');
 app.set('port', process.env.PORT || 1208);
 
 var server = app.listen(app.get('port'), function() {
-  debug('Backend server listening on port ' + server.address().port);
+  console.log('Backend server listening on port ' + server.address().port);
 });
