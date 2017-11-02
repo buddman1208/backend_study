@@ -12,15 +12,21 @@ var passport = require('passport')
 var db = require('./mongo')
 
 app.use(logger('dev'))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded())
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb'}));
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(passport.initialize())
-passport.serializeUser(function(user, done) {done(null, user);});
-passport.deserializeUser(function(obj, done) {done(null, obj);});
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+passport.deserializeUser(function (obj, done) {
+    done(null, obj);
+});
 
 app.use('/', require('./routes/index'))
-require('./routes/auth')(app, randomString, passport, db.Users)
+app.use('/images', express.static('uploads'))
+require('./routes/auth')(app, randomString, passport, db.Users, multer)
 
 module.exports = app
+

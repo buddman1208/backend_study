@@ -1,6 +1,16 @@
 var FacebookTokenStrategy = require('passport-facebook-token')
 
-function init(app, randomstring, passport, Users) {
+function init(app, randomstring, passport, Users, multer) {
+    var filedisk = multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, 'uploads/')
+        },
+        filename: (req, file, cb) => {
+            cb(null, file.originalname)
+        }
+    })
+    var upload = multer({storage: filedisk})
+
     passport.use(new FacebookTokenStrategy({
         clientID: "1649437005348937",
         clientSecret: "5452e5edeb1623b12b87efd4692feb98",
@@ -30,7 +40,13 @@ function init(app, randomstring, passport, Users) {
     app.get('/auth/facebook/token', passport.authenticate('facebook-token'), (req, res) => {
         if (req.err) res.send(500)
         if (req.user) res.send(200, req.user)
+    }).post('/profile/update', upload.any(), (req, res) => {
+        // for(i in req.files){
+        //     console.log(req.files[i])
+        // }
+        console.log(req.files)
     })
 
 }
+
 module.exports = init;
